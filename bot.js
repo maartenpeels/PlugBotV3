@@ -85,12 +85,12 @@
         status: false,
         name: "plugBot",
         loggedInID: null,
-        scriptLink: "https://rawgit.com/maartenpeels/PlugBotV2/master/otbhmBot.js",
+        scriptLink: "https://rawgit.com/maartenpeels/PlugBotV3/master/bot.js",
         cmdLink: "N/A",
         retrieveSettings: retrieveSettings,
         retrieveFromStorage: retrieveFromStorage,
         settings: {
-            botName: "otbhmBot",
+            botName: "plugBot",
             startupCap: 200, // 1-200
             startupVolume: 0, // 0-100
             startupEmoji: true, // true or false
