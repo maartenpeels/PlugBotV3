@@ -2348,4 +2348,5 @@
             },
         }
     };
+    plugBot.startup();
 }).call(this);
