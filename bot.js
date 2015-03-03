@@ -1,5 +1,5 @@
 (function () {
-	API.getWaitListPosition = function(id){
+    API.getWaitListPosition = function(id){
         if(typeof id === 'undefined' || id === null){
             id = API.getUser().id;
         }
@@ -645,12 +645,7 @@
             var lastplay = obj.lastPlay;
             if (typeof lastplay === 'undefined') return;
             if (plugBot.settings.songstats) {
-                if (typeof plugBot.chat.songstatistics === "undefined") {
-                    API.sendChat("/me " + lastplay.media.author + " - " + lastplay.media.title + ": " + lastplay.score.positive + "W/" + lastplay.score.grabs + "G/" + lastplay.score.negative + "M.")
-                }
-                else {
                     API.sendChat(subChat("/me %%ARTIST%% - %%TITLE%%: %%WOOTS%%W/%%GRABS%%G/%%MEHS%%M.", {artist: lastplay.media.author, title: lastplay.media.title, woots: lastplay.score.positive, grabs: lastplay.score.grabs, mehs: lastplay.score.negative}))
-                }
             }
             plugBot.room.roomstats.totalWoots += lastplay.score.positive;
             plugBot.room.roomstats.totalMehs += lastplay.score.negative;
@@ -804,8 +799,8 @@
                     return true;
                 }
 
-                var rlJoinChat = plugBot.chat.roulettejoin;
-                var rlLeaveChat = plugBot.chat.rouletteleave;
+                var rlJoinChat = "/me @%%NAME%% joined the roulette! (!leave if you regret it.)";
+                var rlLeaveChat = "/me @%%NAME%% left the roulette!";
 
                 var joinedroulette = rlJoinChat.split('%%NAME%%');
                 if (joinedroulette[1].length > joinedroulette[0].length) joinedroulette = joinedroulette[1];
@@ -971,8 +966,6 @@
             window.bot = plugBot;
             plugBot.roomUtilities.updateBlacklists();
             setInterval(plugBot.roomUtilities.updateBlacklists, 60 * 60 * 1000);
-            plugBot.getNewBlacklistedSongs = plugBot.roomUtilities.exportNewBlacklistedSongs;
-            plugBot.logNewBlacklistedSongs = plugBot.roomUtilities.logNewBlacklistedSongs;
             if (plugBot.room.roomstats.launchTime === null) {
                 plugBot.room.roomstats.launchTime = Date.now();
             }
@@ -1024,7 +1017,7 @@
             }
             API.chatLog('Avatars capped at ' + plugBot.settings.startupCap);
             API.chatLog('Volume set to ' + plugBot.settings.startupVolume);
-            loadChat(API.sendChat(subChat("/me %%BOTNAME%% v%%VERSION%% online!", {botname: plugBot.settings.botName, version: plugBot.version})));
+            API.sendChat(subChat("/me %%BOTNAME%% v%%VERSION%% online!", {botname: plugBot.settings.botName, version: plugBot.version}));
         },
         commands: {
             executable: function (minRank, chat) {
@@ -1168,14 +1161,14 @@
                         if (plugBot.settings.afkRemoval) {
                             plugBot.settings.afkRemoval = !plugBot.settings.afkRemoval;
                             clearInterval(plugBot.room.afkInterval);
-                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': plugBot.chat.afkremoval}));
+                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': "AFK removal"}));
                         }
                         else {
                             plugBot.settings.afkRemoval = !plugBot.settings.afkRemoval;
                             plugBot.room.afkInterval = setInterval(function () {
                                 plugBot.roomUtilities.afkCheck()
                             }, 2 * 1000);
-                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': plugBot.chat.afkremoval}));
+                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': "AFK removal"}));
                         }
                     }
                 }
@@ -1232,11 +1225,11 @@
                         if (plugBot.room.autoskip) {
                             plugBot.room.autoskip = !plugBot.room.autoskip;
                             clearTimeout(plugBot.room.autoskipTimer);
-                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': plugBot.chat.autoskip}));
+                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': "autoskip"}));
                         }
                         else {
                             plugBot.room.autoskip = !plugBot.room.autoskip;
-                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': plugBot.chat.autoskip}));
+                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': "autoskip"}));
                         }
                     }
                 }
@@ -1438,11 +1431,11 @@
                     else {
                         if (plugBot.settings.voteSkip) {
                             plugBot.settings.voteSkip = !plugBot.settings.voteSkip;
-                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': plugBot.chat.voteskip}));
+                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': "voteskip"}));
                         }
                         else {
                             plugBot.settings.motdEnabled = !plugBot.settings.motdEnabled;
-                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': plugBot.chat.voteskip}));
+                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': "voteskip"}));
                         }
                     }
                 }
@@ -1523,11 +1516,11 @@
                     else {
                         if (plugBot.settings.filterChat) {
                             plugBot.settings.filterChat = !plugBot.settings.filterChat;
-                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': plugBot.chat.chatfilter}));
+                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': "chatfilter"}));
                         }
                         else {
                             plugBot.settings.filterChat = !plugBot.settings.filterChat;
-                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': plugBot.chat.chatfilter}));
+                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': "chatfilter"}));
                         }
                     }
                 }
@@ -1986,11 +1979,11 @@
                     else {
                         if (plugBot.settings.etaRestriction) {
                             plugBot.settings.etaRestriction = !plugBot.settings.etaRestriction;
-                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': plugBot.chat.etarestriction}));
+                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': "etarestriction"}));
                         }
                         else {
                             plugBot.settings.etaRestriction = !plugBot.settings.etaRestriction;
-                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': plugBot.chat.etarestriction}));
+                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': "etarestriction"}));
                         }
                     }
                 }
@@ -2057,11 +2050,11 @@
                     else {
                         if (plugBot.settings.songstats) {
                             plugBot.settings.songstats = !plugBot.settings.songstats;
-                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': plugBot.chat.songstats}));
+                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': "songstats"}));
                         }
                         else {
                             plugBot.settings.songstats = !plugBot.settings.songstats;
-                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': plugBot.chat.songstats}));
+                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': "songstats"}));
                         }
                     }
                 }
@@ -2091,24 +2084,24 @@
                         var from = chat.un;
                         var msg = '/me [@' + from + '] ';
 
-                        msg += plugBot.chat.afkremoval + ': ';
+                        msg += 'afkremoval: ';
                         if (plugBot.settings.afkRemoval) msg += 'ON';
                         else msg += 'OFF';
                         msg += '. ';
-                        msg += plugBot.chat.afksremoved + ": " + plugBot.room.afkList.length + '. ';
-                        msg += plugBot.chat.afklimit + ': ' + plugBot.settings.maximumAfk + '. ';
-					
-                        msg += plugBot.chat.blacklist + ': ';
+                        msg += "afksremoved: " + plugBot.room.afkList.length + '. ';
+                        msg += 'afklimit: ' + plugBot.settings.maximumAfk + '. ';
+                    
+                        msg += 'blacklist: ';
                         if (plugBot.settings.blacklistEnabled) msg += 'ON';
                         else msg += 'OFF';
                         msg += '. ';
 
-                        msg += plugBot.chat.chatfilter + ': ';
+                        msg += 'chatfilter: ';
                         if (plugBot.settings.filterChat) msg += 'ON';
                         else msg += 'OFF';
                         msg += '. ';
 
-                        msg += plugBot.chat.voteskip + ': ';
+                        msg += 'voteskip: ';
                         if (plugBot.settings.voteskip) msg += 'ON';
                         else msg += 'OFF';
                         msg += '. ';
@@ -2116,7 +2109,7 @@
                         var launchT = plugBot.room.roomstats.launchTime;
                         var durationOnline = Date.now() - launchT;
                         var since = plugBot.roomUtilities.msToStr(durationOnline);
-                        msg += subChat(plugBot.chat.activefor, {time: since});
+                        msg += subChat("I have been active for %%TIME%%.", {time: since});
 
                         return API.sendChat(msg);
                     }
@@ -2172,9 +2165,9 @@
                         var temp = plugBot.settings.blacklistEnabled;
                         plugBot.settings.blacklistEnabled = !temp;
                         if (plugBot.settings.blacklistEnabled) {
-                          return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': plugBot.chat.blacklist}));
+                          return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': "blacklist"}));
                         }
-                        else return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': plugBot.chat.blacklist}));
+                        else return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': "blacklist"}));
                     }
                 }
             },
@@ -2290,11 +2283,11 @@
                     if (!plugBot.commands.executable(this.rank, chat)) return void (0);
                     else {
                         if (plugBot.settings.usercommandsEnabled) {
-                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': plugBot.chat.usercommands}));
+                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': "usercommands"}));
                             plugBot.settings.usercommandsEnabled = !plugBot.settings.usercommandsEnabled;
                         }
                         else {
-                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': plugBot.chat.usercommands}));
+                            API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': "usercommands"}));
                             plugBot.settings.usercommandsEnabled = !plugBot.settings.usercommandsEnabled;
                         }
                     }
@@ -2317,9 +2310,9 @@
                         var vratio = user.votes;
                         var ratio = null;
                         if (vratio.meh == 0){
-                        	ratio = vratio.woot;
+                            ratio = vratio.woot;
                         }else{
-                        	ration = vratio.woot / vratio.meh;
+                            ration = vratio.woot / vratio.meh;
                         }
                         
                         API.sendChat(subChat("/me [@%%NAME%%] @%%USERNAME%% ~ woots: %%WOOT%%, mehs: %%MEHS%%, ratio (w/m): %%RATIO%%.", {name: chat.un, username: name, woot: vratio.woot, mehs: vratio.meh, ratio: ratio.toFixed(2)}));
@@ -2337,11 +2330,11 @@
                     else {
                         if (plugBot.settings.welcome) {
                             plugBot.settings.welcome = !plugBot.settings.welcome;
-                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': plugBot.chat.welcomemsg}));
+                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': "welcomemsg"}));
                         }
                         else {
                             plugBot.settings.welcome = !plugBot.settings.welcome;
-                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': plugBot.chat.welcomemsg}));
+                            return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': "welcomemsg"}));
                         }
                     }
                 }
