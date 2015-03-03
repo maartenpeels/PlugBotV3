@@ -335,6 +335,11 @@ welcomeCommand: {
                 rank: 'mod',
                 type: 'exact' }
  
+ 
+ clearlistCommand: {
+                command: 'clearlist',
+                rank: 'manager',
+                type: 'startsWith' }
 #How to run
 ------------------------------
 To run the script in your webbrowser, you would have to make a new bookmark with the path to your `bot.js` file from, you can simply type:
