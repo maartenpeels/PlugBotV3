@@ -97,7 +97,6 @@
             maximumAfk: 120,
             afkRemoval: false,
             maximumDc: 60,
-            bouncerPlus: true,
             blacklistEnabled: false,
             voteSkip: true,
             voteSkipLimit: 10,
