@@ -162,6 +162,31 @@
             },
             newBlacklisted: [],
             newBlacklistedSongFunction: null,
+            roulette: {
+                rouletteStatus: false,
+                participants: [],
+                countdown: null,
+                startRoulette: function () {
+                    plugBot.room.roulette.rouletteStatus = true;
+                    plugBot.room.roulette.countdown = setTimeout(function () {
+                        plugBot.room.roulette.endRoulette();
+                    }, 20 * 1000);
+                    API.sendChat("/me The roulette is now open! Type !join to participate, you have 20 seconds!");
+                },
+                endRoulette: function () {
+                    plugBot.room.roulette.rouletteStatus = false;
+                    var ind = Math.floor(Math.random() * plugBot.room.roulette.participants.length);
+                    var winner = plugBot.room.roulette.participants[ind];
+                    plugBot.room.roulette.participants = [];
+                    var pos = Math.floor((Math.random() * API.getWaitList().length) + 1);
+                    var user = plugBot.userUtilities.lookupUser(winner);
+                    var name = user.username;
+                    API.sendChat(subChat("/me A winner has been picked! the lucky one is @%%NAME%%, he/she will be set to position %%POSITION%%.", {name: name, position: pos}));
+                    setTimeout(function (winner, pos) {
+                        plugBot.userUtilities.moveUser(winner, pos, false);
+                    }, 1 * 1000, winner, pos);
+                }
+            }
         },
         User: function (id, name) {
             this.id = id;
@@ -184,6 +209,8 @@
                 songCount: 0
             };
             this.lastKnownPosition = null;
+            this.lastSlotsTime = null;
+            this.lostSlots = 0;
         },
          userUtilities: {
             getJointime: function (user) {
@@ -1556,6 +1583,81 @@
                 }
             },
 
+            slotsCommand: {
+                command: 'slots',
+                rank: 'user',
+                type: 'exact',
+                functionality: function (chat, cmd) {
+                    if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
+                    if (!plugBot.commands.executable(this.rank, chat)) return void (0);
+                    else {
+                        var user = plugBot.userUtilities.lookupUser(chat.uid);
+                        if(API.getWaitListPosition(chat.uid) > -1)
+                        {
+                            var resultInMinutes = 0;
+                            if(user.lastSlotsTime != null){
+                                var endTime = new Date();
+                                var difference = endTime.getTime() - user.lastSlotsTime.getTime(); // This will give difference in milliseconds
+                                resultInMinutes = Math.round(difference / 60000);
+                            }
+     
+                            if(user.lastSlotsTime == null || resultInMinutes >= 5)
+                            {
+                                user.lastSlotsTime = new Date();
+                                setTimeout(function () {
+                                    //get 3 random strings from array
+                                    var fruits = [":watermelon:", ":strawberry:", ":grapes:", ":lemon:", ":peach:", ":cherries:"];
+                                    var slots = [fruits[Math.floor(Math.random()*fruits.length)], fruits[Math.floor(Math.random()*fruits.length)], fruits[Math.floor(Math.random()*fruits.length)]];
+                                    
+                                    //check if user has won something
+                                    var msg = "/me [@"+chat.un+"] "+slots[0]+"-"+slots[1]+"-"+slots[2]+", ";
+                                    if(slots[0] == slots[1] && slots[1] == slots[2])
+                                    {//3 in a row, gain 5 waitlist spots
+                                        msg += "you got 3 in a row! You gain 5 waitlist spots!";
+                                        var newPos = 0;
+                                        var oldPos = API.getWaitListPosition(user.id);
+
+                                        if(oldPos < 5) newPos = 0;
+                                        if(oldPos >= 5) newPos = oldPos-5;
+
+                                        moveUser(user.id, newPos, true);
+                                    }else if(slots[0] == slots[1] || slots[1] == slots[2])
+                                    {//2 in a row, play again now
+                                        msg += "you got 2 in a row! Play again immediately!";
+                                        user.lastSlotsTime = null;
+                                    }else if((slots[0] != slots[1]) && (slots[1] != slots[2]) && (slots[0] != slots[2]))
+                                    {//all different, user.lostSlots + 1
+                                        user.lostSlots = user.lostSlots+1;
+                                        if(user.lostSlots >= 5)
+                                        {
+                                            msg += "you have had 5 losses in a row, you will be put back 2 spots in the waitlist!";
+                                            var newPos = 0;
+                                            var oldPos = API.getWaitListPosition(user.id);
+
+                                            newPos = oldPos + 2;
+                                            if(newPos > 50) newPos = 50;
+
+                                            moveUser(user.id, newPos, true);
+                                        }else{
+                                            msg += "you got nothing! Amount of losses is now " + user.lostSlots;
+                                        }
+                                    } 
+                                    API.sendChat(msg); 
+                                }, 500);
+                            }else{
+                                setTimeout(function () {
+                                    API.sendChat(subChat("/me [@%%NAME%%] You can't use slots more than once every 5 minutes.", {name: chat.un}));
+                                }, 500);                            
+                            }
+                        }else{
+                            setTimeout(function () {
+                                API.sendChat(subChat("/me [@%%NAME%%] You can't use slots when you ar enot in the waitlist.", {name: chat.un}));
+                            }, 500);  
+                        }
+                    }
+                }
+            },
+
             jointimeCommand: {
                 command: 'jointime',
                 rank: 'bouncer',
@@ -2322,7 +2424,7 @@
 
             welcomeCommand: {
                 command: 'welcome',
-                rank: 'mod',
+                rank: 'manager',
                 type: 'exact',
                 functionality: function (chat, cmd) {
                     if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
@@ -2339,6 +2441,32 @@
                     }
                 }
             },
+
+            clearlistCommand: {
+                command: 'clearlist',
+                rank: 'manager',
+                type: 'startsWith',
+                functionality: function (chat, cmd) {
+                    if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
+                    if (!plugBot.commands.executable(this.rank, chat)) return void (0);
+                    else {
+                        API.sendChat(subChat("/me [%%NAME%% cleared waitlist.]", {name: chat.un}));
+                        var msg = chat.message;
+                        var lock = !(msg.length === cmd.length);
+                        plugBot.roomUtilities.booth.lockBooth();
+                        var wlist = API.getWaitList();
+                        for (var i = 0; i < wlist.length; i++) {
+                            API.moderateRemoveDJ(wlist[i].id);
+                        }
+                        if(!lock)
+                        {
+                            setTimeout(function () {
+                                plugBot.roomUtilities.booth.unlockBooth();
+                            }, 1000);
+                        }
+                    }
+                }
+            }
         }
     };
     plugBot.startup();
