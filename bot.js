@@ -1651,7 +1651,7 @@
                             }
                         }else{
                             setTimeout(function () {
-                                API.sendChat(subChat("/me [@%%NAME%%] You can't use slots when you ar enot in the waitlist.", {name: chat.un}));
+                                API.sendChat(subChat("/me [@%%NAME%%] You can't use slots when you are not in the waitlist.", {name: chat.un}));
                             }, 500);  
                         }
                     }
