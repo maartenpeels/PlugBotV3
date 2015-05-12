@@ -16,6 +16,9 @@ This bot is written to help:
 --------------
 
 ###Bot Automation
+####Local Storage
+*The bot will save all it's data. When you turn off the bot, and back on again, all the settings will be loaded, also the disconnect-log, user info, history etc.
+
 ####AFK Monitor
 *When a user is on the waitlist and is not active(sending chat messages), he/she will be notified 2 times, and will then be removed from the waitlist.
 
