@@ -86,7 +86,7 @@
         name: "plugBot",
         loggedInID: null,
         scriptLink: "https://rawgit.com/maartenpeels/PlugBotV3/master/bot.js",
-        cmdLink: "N/A",
+        cmdLink: "https://rawgit.com/maartenpeels/PlugBotV3/master/README.md",
         retrieveSettings: retrieveSettings,
         retrieveFromStorage: retrieveFromStorage,
         settings: {
