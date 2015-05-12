@@ -154,11 +154,7 @@
                 songCount: 0,
                 chatmessages: 0
             },
-            messages: {
-                toUser: [],
-                toID: [],
-                message: []
-            },
+            messages: [],
             queue: {
                 id: [],
                 position: []
@@ -576,9 +572,7 @@
                     if (plugBot.room.users[i].username !== chat.un) {
                         plugBot.room.users[i].username = chat.un;
                     }
-                    plugBot.room.messages.toUser = chat.un;
-                    plugBot.room.messages.toID = chat.uid;
-                    plugBot.room.messages.message = chat.message;
+                    plugBot.room.messages[chat.uid] = chat;
                 }
             }
             if (plugBot.chatUtilities.chatFilter(chat)) return void (0);
