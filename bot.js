@@ -99,11 +99,9 @@
             botName: "plugBot",
             startupCap: 200, // 1-200
             startupVolume: 0, // 0-100
-            startupEmoji: true, // true or false
             maximumAfk: 120,
             afkRemoval: false,
             maximumDc: 60,
-            blacklistEnabled: false,
             voteSkip: true,
             voteSkipLimit: 10,
             timeGuard: true,
@@ -125,7 +123,7 @@
             filterChat: true,
             etaRestriction: false,
             welcome: false,
-            songstats: true,
+            songstats: false,
             commandLiteral: "!",
         },
         room: {
@@ -183,7 +181,7 @@
                     var pos = Math.floor((Math.random() * API.getWaitList().length) + 1);
                     var user = plugBot.userUtilities.lookupUser(winner);
                     var name = user.username;
-                    API.sendChat(subChat("/me A winner has been picked! the lucky one is @%%NAME%%, he/she will be set to position %%POSITION%%.", {name: name, position: pos}));
+                    API.sendChat(subChat("/me A winner has been picked! the lucky one is @%%NAME%%, he/she will be set to a random position(%%POSITION%%)!", {name: name, position: pos}));
                     setTimeout(function (winner, pos) {
                         plugBot.userUtilities.moveUser(winner, pos, false);
                     }, 1 * 1000, winner, pos);
@@ -684,15 +682,6 @@
             plugBot.roomUtilities.intervalMessage();
             plugBot.room.currentDJID = obj.dj.id;
 
-            var mid = obj.media.format + ':' + obj.media.cid;
-            for (var bl in plugBot.room.blacklists) {
-                if (plugBot.settings.blacklistEnabled) {
-                    if (plugBot.room.blacklists[bl].indexOf(mid) > -1) {
-                        API.sendChat(subChat("/me This track is on the %%BLACKLIST%% blacklist! Skipping...", {blacklist: bl}));
-                        return API.moderateForceSkip();
-                    }
-                }
-            }
 
             var alreadyPlayed = false;
             for (var i = 0; i < plugBot.room.historyList.length; i++) {
@@ -1031,20 +1020,6 @@
             API.sendChat('/cap ' + plugBot.settings.startupCap);
             API.setVolume(plugBot.settings.startupVolume);
             $("#woot").click();
-            if (plugBot.settings.startupEmoji) {
-                var emojibuttonoff = $(".icon-emoji-off");
-                if (emojibuttonoff.length > 0) {
-                    emojibuttonoff[0].click();
-                }
-                API.chatLog(':smile: Emojis enabled.');
-            }
-            else {
-                var emojibuttonon = $(".icon-emoji-on");
-                if (emojibuttonon.length > 0) {
-                    emojibuttonon[0].click();
-                }
-                API.chatLog('Emojis disabled.');
-            }
             API.chatLog('Avatars capped at ' + plugBot.settings.startupCap);
             API.chatLog('Volume set to ' + plugBot.settings.startupVolume);
             API.sendChat(subChat("/me %%BOTNAME%% v%%VERSION%% online!", {botname: plugBot.settings.botName, version: plugBot.version}));
@@ -2196,11 +2171,6 @@
                         msg += "afksremoved: " + plugBot.room.afkList.length + '. ';
                         msg += 'afklimit: ' + plugBot.settings.maximumAfk + '. ';
                     
-                        msg += 'blacklist: ';
-                        if (plugBot.settings.blacklistEnabled) msg += 'ON';
-                        else msg += 'OFF';
-                        msg += '. ';
-
                         msg += 'chatfilter: ';
                         if (plugBot.settings.filterChat) msg += 'ON';
                         else msg += 'OFF';
@@ -2255,24 +2225,6 @@
                                 plugBot.userUtilities.moveUser(user2.id, p1, false);
                             }, 2000, user2, p1);
                         }
-                    }
-                }
-            },
-
-            toggleblCommand: {
-                command: 'togglebl',
-                rank: 'bouncer',
-                type: 'exact',
-                functionality: function (chat, cmd) {
-                    if (this.type === 'exact' && chat.message.length !== cmd.length) return void (0);
-                    if (!plugBot.commands.executable(this.rank, chat)) return void (0);
-                    else {
-                        var temp = plugBot.settings.blacklistEnabled;
-                        plugBot.settings.blacklistEnabled = !temp;
-                        if (plugBot.settings.blacklistEnabled) {
-                          return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% enabled.", {name: chat.un, 'function': "blacklist"}));
-                        }
-                        else return API.sendChat(subChat("/me [@%%NAME%%] %%FUNCTION%% disabled.", {name: chat.un, 'function': "blacklist"}));
                     }
                 }
             },
