@@ -348,10 +348,10 @@ To run the script in your webbrowser, you would have to make a new bookmark with
 javascript:$.getScript('[YOUR INCLUDE LOCATION]');
 ```
 
-Into the bookmark url.  My file is usually on my server at `http://maartenpeels.nl/modbot.js`, so my include would be:
+Into the bookmark url.  My file is usually on rawgit (https://rawgit.com), so my include would be:
 
 ```Javascript
-javascript:$.getScript('http://maartenpeels.nl/modbot.js');
+javascript:$.getScript('https://rawgit.com/maartenpeels/PlugBotV3/master/bot.js');
 ```
 
 That's all!
