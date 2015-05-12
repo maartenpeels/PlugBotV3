@@ -679,7 +679,6 @@
             plugBot.room.roomstats.totalMehs += lastplay.score.negative;
             plugBot.room.roomstats.totalCurates += lastplay.score.grabs;
             plugBot.room.roomstats.songCount++;
-            plugBot.roomUtilities.intervalMessage();
             plugBot.room.currentDJID = obj.dj.id;
 
 
