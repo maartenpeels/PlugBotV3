@@ -77,7 +77,7 @@
         }
     };
 
-    var botCreator = "Maarten Peels (m44rt3n";
+    var botCreator = "Maarten Peels (m44rt3n)";
     var botCreatorIDs = ["4090016"];
 
     var plugBot = {
@@ -1639,7 +1639,7 @@
 
                                             moveUser(user.id, newPos, true);
                                         }else{
-                                            msg += "you got nothing! Amount of losses is now " + user.lostSlots;
+                                            msg += "you got nothing! Amount of losses in a row is now " + user.lostSlots;
                                         }
                                     } 
                                     API.sendChat(msg); 
