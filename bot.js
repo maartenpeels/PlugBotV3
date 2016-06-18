@@ -1,9 +1,9 @@
 (function () {
     //DEBUG FUNCTION
-    API.sendChat = function(message){
-        console.debug(message);
-        return -1;
-    };
+    //API.sendChat = function(message){
+    //    console.debug(message);
+    //    return -1;
+    //};
 
     API.getWaitListPosition = function(id){
         if(typeof id === 'undefined' || id === null){
