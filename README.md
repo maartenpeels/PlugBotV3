@@ -1,7 +1,7 @@
 Plug.DJ Moderation Bot
 ==========================
 Written by Maarten Peels
-Running on: (Link)[http://bit.do/coosto]
+Running on: [Link](http://bit.do/coosto)
 
 
 **If you have any issues with the bot you want to bring up with me, then open an issue on the issues tab above.**
